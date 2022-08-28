@@ -1,0 +1,46 @@
+*******************************************************************************
+                                      EX1
+*******************************************************************************
+
+-------------------------------------------------------------------------------
+                              General Information
+-------------------------------------------------------------------------------
+Type.................: Application
+Serial #.............: 1
+Group ID.............: 17
+Compression Format...: ZIP
+Git URL ............: https://github.com/AdiDahari/EvilTwin
+
+-------------------------------------------------------------------------------
+                               Post Information
+-------------------------------------------------------------------------------
+Posted by............:  Adi Dahari      206094955 
+						Amit Karach     316422146 
+						Nadav Keysar    207229477
+						Yehonadav Yadai 315452045
+Posted on............: 5/12/2022
+
+
+-------------------------------------------------------------------------------
+                                 Release Notes
+-------------------------------------------------------------------------------
+orders : 
+0. sudo apt update
+1. run the App run "python3 main.py"
+2. it will autmatic check and install requirements if needed 
+3. the user will be ask to choose attack or defend
+
+Attack:
+    steps:
+        1. choosing sniffing iface and internet access interface
+        2. sniffing with monitor mode enable
+        3. choosing network & victim
+        4. applying simultaniously: deauthentication attack & hosting fake 'public' network
+        5. victim sent to captive portal by dnsmasq configuration: 'address=10.0.0.1' which is set to be related as gw to the hosting iface.
+        6. apache server running in the background at the same gw ip
+        7. as the user enters his parameters and signs in - the fake_ap.py file recognizes it and enables internet by deleting the address parameter.
+        8. victim is able to use the internet with our fake network! we got his login information :) 
+
+
+
+
