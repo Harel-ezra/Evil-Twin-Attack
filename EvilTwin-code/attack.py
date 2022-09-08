@@ -1,9 +1,11 @@
 import os
+
 from netifaces import interfaces
-from scapy.all import Dot11, Dot11Beacon, Dot11Deauth, RadioTap, sendp, packet
 import signal
-from time import sleep
 import sys
+
+from scapy.layers.dot11 import Dot11, Dot11Beacon
+from scapy.all import packet
 import conf
 import sniffer
 import settings
@@ -19,9 +21,9 @@ def terminate():
     conf.cleanup()
     # read 'mode_switcher.py' documentation for more information
     mode_switcher('managed')
-    settings.system_operation('killall hostapd dnsmasq')
+    os.system('killall hostapd dnsmasq')
     print('Terminating Program...')
-    settings.system_operation('killall python3')
+    os.system('killall python3')
     exit(0)
 
 
@@ -155,7 +157,7 @@ def main():
     sniffer.run()
 
     # stop channel hopping, not neccessary any more
-    settings.system_operation(f'sudo kill -9 {hopper_id}')
+    os.system(f'sudo kill -9 {hopper_id}')
 
     # selecting Access Point to attack
     flag = False
@@ -169,18 +171,17 @@ def main():
 
         else:
             ap_mac = settings.ap_list[settings.ap_name][0]
-            settings.system_operation(
+            os.system(
                 f'sudo iwconfig {settings.monitor} channel {settings.ap_list[settings.ap_name][1]}')
             flag = True
 
     # printing Access Point's clients
-    try:
-        1 / len(settings.client_list[ap_mac])
+    if len(settings.client_list[ap_mac]) > 0:
         print(f"\n{settings.ap_name}'s connected clients are: ")
         for i, v in enumerate(settings.client_list[ap_mac]):
             print(f'{i}:\t{v}')
         print('')
-    except:
+    else:
         print(f'\n{settings.ap_name} has no connected clients!\n')
         flag = False
 
@@ -193,8 +194,7 @@ def main():
             if target_num >= 0 and target_num < len(settings.client_list[ap_mac]):
                 target_mac = settings.client_list[ap_mac][target_num]
                 flag = False
-                # deautenticate_client(ap_mac, target_mac)
-                
+
             else:
                 print(f'\n{target_num} is not a valid index. Try again\n')
         else:

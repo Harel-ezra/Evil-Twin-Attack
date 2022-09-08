@@ -1,16 +1,3 @@
-import os
-
-def system_operation(cmd: str):
-    """
-    Function for linux terminal calls
-    """
-    if len(cmd.split(' ')) > 1:
-        op = cmd.split(' ')[1]
-    try:
-        os.system(cmd)
-    except:
-        print(f'Failed to run {op or cmd} command')
-
 def init():
     """
     This file holds all of program's shared variables.

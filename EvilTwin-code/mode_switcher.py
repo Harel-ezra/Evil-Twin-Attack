@@ -1,4 +1,5 @@
 import settings
+import os
 
 
 def mode_switcher(mode, iface = None, verbose = 1):
@@ -11,9 +12,9 @@ def mode_switcher(mode, iface = None, verbose = 1):
     """
     if verbose: print(f'\nswitching {iface or settings.monitor} to {mode} mode...\n')
     try:
-        settings.system_operation(f'sudo ifconfig {iface or settings.monitor} down')
-        settings.system_operation(f'sudo iwconfig {iface or settings.monitor} mode {mode}')
-        settings.system_operation(f'sudo ifconfig {iface or settings.monitor} up')
+        os.system(f'sudo ifconfig {iface or settings.monitor} down')
+        os.system(f'sudo iwconfig {iface or settings.monitor} mode {mode}')
+        os.system(f'sudo ifconfig {iface or settings.monitor} up')
 
     except PermissionError:
         print(f"Permission denied for changing {iface or settings.monitor}'s mode to {mode}. Please make sure you run the program with 'sudo'")

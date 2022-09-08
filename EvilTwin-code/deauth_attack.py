@@ -1,8 +1,6 @@
-from scapy.all import sendp, RadioTap, Dot11, Dot11Deauth
+from scapy.all import sendp
 import sys 
-import signal
-from mode_switcher import mode_switcher
-
+from scapy.layers.dot11 import RadioTap, Dot11, Dot11Deauth
 
 
 def deauthenticate(iface, ap_mac, client_mac):
@@ -23,6 +21,7 @@ def deauthenticate(iface, ap_mac, client_mac):
             sendp(packet_ap, inter=0.1, count=10, iface=iface, verbose=0)
         except:
             pass
+
 
 if __name__ == '__main__':
     if len(sys.argv) != 4:

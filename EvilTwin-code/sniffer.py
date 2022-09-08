@@ -1,5 +1,9 @@
-from scapy.all import *
+import scapy
+from scapy.layers.dot11 import Dot11, Dot11Beacon
+from scapy.sendrecv import sniff
+
 import settings
+
 
 def packet_handler(packet: scapy.packet):
     """
@@ -18,23 +22,23 @@ def packet_handler(packet: scapy.packet):
     if packet.haslayer(Dot11):
 
         # a Beacon packet
-        if packet.haslayer(Dot11Beacon):    
+        if packet.haslayer(Dot11Beacon):
 
-                # decoding AP's name to normal string
-                beacon_name = packet.info.decode("utf-8")  
+            # decoding AP's name to normal string
+            beacon_name = packet.info.decode("utf-8")
 
-                # if name is already listed - continue
-                if beacon_name and beacon_name not in settings.ap_list.keys():
+            # if name is already listed - continue
+            if beacon_name and beacon_name not in settings.ap_list.keys():
+                # beacon's source address = AP's address, channel of signal.
+                beacon_addr = packet.addr2.upper()
+                beacon_channel = packet.channel
 
-                    # beacon's source address = AP's address, channel of signal.  
-                    beacon_addr = packet.addr2.upper()  
-                    beacon_channel = packet.channel
+                # tuple AP's address and channel to it's name key.
+                settings.ap_list[beacon_name] = (beacon_addr, beacon_channel)
 
-                    # tuple AP's address and channel to it's name key.
-                    settings.ap_list[beacon_name] = (beacon_addr, beacon_channel)   
-                
-                    # smooth printing with alignment to the right
-                    print('{}{}\t\t{}\t\t{:<10}'.format(f'{len(settings.ap_list) - 1}: ',f'MAC: {beacon_addr}', f'Channel: {beacon_channel}', f'SSID: {beacon_name}'))
+                # smooth printing with alignment to the right
+                print('{}{}\t\t{}\t\t{:<10}'.format(f'{len(settings.ap_list) - 1}: ', f'MAC: {beacon_addr}',
+                                                    f'Channel: {beacon_channel}', f'SSID: {beacon_name}'))
 
         # else, 802.11 packet but not a beacon - check if has Frame Control information
         elif packet.FCfield:
@@ -45,6 +49,7 @@ def packet_handler(packet: scapy.packet):
             # To DS - first bit, From DS - second bit
             to_DS = DS & 0x1 != 0
             from_DS = DS & 0x2 != 0
+            # https://www.oreilly.com/library/view/80211-wireless-networks/0596100523/ch04.html
 
             # To DS and not From DS - a packet from AP to Client
             if to_DS and not from_DS:
@@ -54,8 +59,6 @@ def packet_handler(packet: scapy.packet):
                     settings.client_list[packet.addr1.upper()].append(packet.addr2.upper())
 
 
-                
-
 def run():
     """
     This function basically interacts with the user and calling scapy.sniff() with the callback function written above.
@@ -64,8 +67,6 @@ def run():
     print(f'************** Sniffing {settings.monitor} for {settings.time_out} seconds **************\n')
 
     # scapy's sniff method with packet_handler as the callback function
-    sniff(iface = settings.monitor, prn = packet_handler, timeout=settings.time_out)
+    sniff(iface=settings.monitor, prn=packet_handler, timeout=settings.time_out)
 
     print(f'\n**************** Finished sniffing {settings.monitor} *****************')
-
-
