@@ -11,6 +11,9 @@ def cleanup():
     os.system(f'iptables --delete-chain')
     os.system(f'iptables -t nat --delete-chain')
     os.system(f'iptables -t mangle --delete-chain')
+    os.system("service hostapd stop")
+    os.system("service apache2 stop")
+    os.system("service dnsmasq stop")
     os.system('killall hostapd dnsmasq')
 
     os.system(f'iw dev {settings.hosting} del')
@@ -26,15 +29,9 @@ def configurate():
         os.system(f'cp -rf ./conf/portal/* /var/www/html')
         os.system('chmod 777 /var/www/html/inputs.txt')
 
-        # os.system('cat conf/apache.conf > /etc/apache2/sites-available/000-default.conf')
-        # os.system('cat conf/apache.conf > /etc/apache2/sites-enabled/000-default.conf')
-        # os.system('cat conf/android.conf > /etc/apache2/sites-enabled/android.conf')
-
-        # os.system('iptables --flush')
-        # os.system('iptables --table nat --flush')
-        # os.system('iptables --delete-chain')
-        # os.system('iptables --table nat --delete-chain')
-        # os.system('iptables -P FORWARD ACCEPT')
+        os.system('cat conf/apache.conf > /etc/apache2/sites-available/000-default.conf')
+        os.system('cat conf/apache.conf > /etc/apache2/sites-enabled/000-default.conf')
+        os.system('cat conf/android.conf > /etc/apache2/sites-enabled/android.conf')
 
         os.system(f'iptables -t nat --append POSTROUTING --out-interface {settings.internet} -j MASQUERADE')
         os.system(f'iptables --append FORWARD --in-interface {settings.hosting} -j ACCEPT')
